@@ -18,6 +18,20 @@ impl Plugin for UiPlugin {
 /// This function sets up the UI for the score in our game;
 /// Instantiating the Text elements that will later be used to store the score.
 pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
+    // The Board
+    commands.spawn(SpriteBundle {
+        texture: asset_server.load("sprites/Board.png"),
+        transform: Transform::from_translation(Vec3 {
+            y: -47.,
+            ..default()
+        }),
+        ..default()
+    });
+    // Size of the Scorebar - 341x47
+    commands.spawn(SpriteBundle {
+        texture: asset_server.load("sprites/ScoreBar.png"),
+        ..default()
+    });
     commands.spawn((
         TextBundle::from_sections([
             TextSection::new(
@@ -33,7 +47,7 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                 TextStyle {
                     font: asset_server.load("fonts/Teko-Regular.ttf"),
                     font_size: 60.0,
-                    color: Color::ORANGE,
+                    color: Color::BLUE,
                 },
             ),
         ]),
@@ -54,7 +68,7 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                 TextStyle {
                     font: asset_server.load("fonts/Teko-Regular.ttf"),
                     font_size: 60.0,
-                    color: Color::BLUE,
+                    color: Color::ORANGE,
                 },
             ),
         ]),
@@ -70,8 +84,8 @@ fn update_score_text(
         let score = score_changed.0;
         for (mut text, score_text) in text_query.iter_mut() {
             match score_text {
-                ScoreText::Left => text.sections[1].value = format!("{}", score.left_score),
-                ScoreText::Right => text.sections[1].value = format!("{}", score.right_score),
+                ScoreText::Right => text.sections[1].value = format!("{}", score.left_score),
+                ScoreText::Left => text.sections[1].value = format!("{}", score.right_score),
             }
         }
     }

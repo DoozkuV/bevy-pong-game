@@ -94,15 +94,9 @@ fn ball_movement(
         for paddle_transform in paddle_query.into_iter() {
             if collide(
                 *ball_translation,
-                Vec2 {
-                    x: BALL_SIZE,
-                    y: BALL_SIZE,
-                },
+                Vec2::splat(BALL_SIZE),
                 paddle_transform.translation,
-                Vec2 {
-                    x: PADDLE_WIDTH,
-                    y: PADDLE_HEIGHT,
-                },
+                Vec2::new(PADDLE_WIDTH, PADDLE_HEIGHT),
             )
             .is_some()
             {
