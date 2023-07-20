@@ -5,7 +5,7 @@ use bevy::window::PrimaryWindow;
 const PADDLE_SPEED: f32 = 500.;
 pub const PADDLE_HEIGHT: f32 = 120.;
 pub const PADDLE_WIDTH: f32 = 17.;
-const AI_SPEED_MODIFIER: f32 = 0.55;
+const AI_SPEED_MODIFIER: f32 = 1.;
 
 const INPUT_UP: KeyCode = KeyCode::W;
 const INPUT_DOWN: KeyCode = KeyCode::S;

@@ -68,7 +68,6 @@ fn update_score_text(
 ) {
     for score_changed in change_events.iter() {
         let score = score_changed.0;
-        println!("New score is {:?}", score);
         for (mut text, score_text) in text_query.iter_mut() {
             match score_text {
                 ScoreText::Left => text.sections[1].value = format!("{}", score.left_score),
