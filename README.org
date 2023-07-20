@@ -1,0 +1,2 @@
+* Bevy Pong
+This is a simple pong game built in bevy. I made this game more just to learn about programming in Rust and programming in the bevy engine. Definitely a work in progress!
