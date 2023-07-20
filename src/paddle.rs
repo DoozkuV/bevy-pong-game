@@ -5,6 +5,7 @@ use bevy::window::PrimaryWindow;
 const PADDLE_SPEED: f32 = 500.;
 pub const PADDLE_HEIGHT: f32 = 120.;
 pub const PADDLE_WIDTH: f32 = 17.;
+const AI_SPEED_MODIFIER: f32 = 0.55;
 
 const INPUT_UP: KeyCode = KeyCode::W;
 const INPUT_DOWN: KeyCode = KeyCode::S;
@@ -68,9 +69,9 @@ fn computer_control(
     for mut transform in paddle_query.iter_mut() {
         // Move the paddle towards the ball
         if ball_y_pos > transform.translation.y {
-            move_paddle(&mut transform, window, 1.0, &time);
+            move_paddle(&mut transform, window, AI_SPEED_MODIFIER, &time);
         } else {
-            move_paddle(&mut transform, window, -1.0, &time);
+            move_paddle(&mut transform, window, -AI_SPEED_MODIFIER, &time);
         }
     }
 }
