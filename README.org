@@ -1,2 +1,4 @@
 * Bevy Pong
-This is a simple pong game built in bevy. I made this game more just to learn about programming in Rust and programming in the bevy engine. Definitely a work in progress!
+This is a simple pong game built in bevy. I made this game more just to learn about programming in Rust and programming in the bevy engine. Definitely a work in progress! Feel free to use the source code as an example for your own bevy code.
+
+Credits for the assets go to [[https://myebstudios.itch.io/simple-ping-pong-assets][Esoe B.Studios]].
