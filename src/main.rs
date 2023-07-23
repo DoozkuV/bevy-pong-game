@@ -15,6 +15,7 @@ use ui::UiPlugin;
 fn main() {
     App::new()
         .add_plugins((
+            // Set the resolution
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
                     resolution: (802., 502.).into(),

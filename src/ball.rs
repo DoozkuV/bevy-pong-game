@@ -5,13 +5,16 @@ use bevy::sprite::collide_aabb::collide;
 use bevy::window::PrimaryWindow;
 
 const BALL_SIZE: f32 = 30.;
-const BALL_DEFAULT_SPEED: f32 = 1000.;
+const BALL_DEFAULT_SPEED: f32 = 800.;
 
 pub struct BallPlugin;
 
 impl Plugin for BallPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, (ball_movement, serve_on_score_change));
+        app.add_systems(
+            Update,
+            (ball_movement, serve_on_score_change, serve_on_button_press),
+        );
     }
 }
 
@@ -123,6 +126,18 @@ fn serve_on_score_change(
     mut score_event: EventReader<ScoreChanged>,
 ) {
     for _ in score_event.iter() {
+        for (mut transform, mut ball) in ball_query.iter_mut() {
+            *transform = Transform::IDENTITY;
+            ball.serve();
+        }
+    }
+}
+
+fn serve_on_button_press(
+    mut ball_query: Query<(&mut Transform, &mut Ball)>,
+    keyboard_input: Res<Input<KeyCode>>,
+) {
+    if keyboard_input.pressed(KeyCode::R) {
         for (mut transform, mut ball) in ball_query.iter_mut() {
             *transform = Transform::IDENTITY;
             ball.serve();

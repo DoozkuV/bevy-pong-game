@@ -28,10 +28,10 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
         ..default()
     });
     // Size of the Scorebar - 341x47
-    commands.spawn(SpriteBundle {
-        texture: asset_server.load("sprites/ScoreBar.png"),
-        ..default()
-    });
+    // commands.spawn(SpriteBundle {
+    //     texture: asset_server.load("sprites/ScoreBar.png"),
+    //     ..default()
+    // });
     commands.spawn((
         TextBundle::from_sections([
             TextSection::new(
