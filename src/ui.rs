@@ -11,13 +11,91 @@ pub enum ScoreText {
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, update_score_text);
+        app.add_systems(Startup, setup_ui)
+            .add_systems(Update, update_score_text);
     }
 }
 
 /// This function sets up the UI for the score in our game;
 /// Instantiating the Text elements that will later be used to store the score.
 pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let font = asset_server.load("fonts/Teko-Regular.ttf");
+
+    // Flex UI setup
+    commands
+        .spawn(NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(25.0),
+                align_items: AlignItems::FlexStart,
+                justify_content: JustifyContent::SpaceBetween,
+                ..default()
+            },
+            // background_color: Color::BLACK.into(),
+            ..default()
+        })
+        .with_children(|parent| {
+            // Left side UI Bar
+            parent
+                .spawn((
+                    NodeBundle {
+                        style: Style {
+                            width: Val::Px(341.0),
+                            height: Val::Px(47.0),
+                            justify_content: JustifyContent::Center,
+                            align_content: AlignContent::Center,
+                            ..default()
+                        },
+                        // A NodeBundle is transparent by default, so to to see the image we have to
+                        // change its color to WHITE
+                        background_color: Color::WHITE.into(),
+                        ..default()
+                    },
+                    UiImage::new(asset_server.load("sprites/ScoreBar.png")),
+                ))
+                .with_children(|parent| {
+                    parent.spawn((
+                        TextBundle::from_section(
+                            "0",
+                            TextStyle {
+                                font: font.clone(),
+                                font_size: 60.0,
+                                color: Color::WHITE,
+                            },
+                        ),
+                        ScoreText::Left,
+                    ));
+                });
+            // Right side UI Bar
+            parent
+                .spawn((
+                    NodeBundle {
+                        style: Style {
+                            width: Val::Px(341.0),
+                            height: Val::Px(47.0),
+                            justify_content: JustifyContent::Center,
+                            align_items: AlignItems::Center,
+                            ..default()
+                        },
+                        background_color: Color::WHITE.into(),
+                        ..default()
+                    },
+                    UiImage::new(asset_server.load("sprites/ScoreBar.png")).with_flip_x(),
+                ))
+                .with_children(|parent| {
+                    parent.spawn((
+                        TextBundle::from_section(
+                            "0",
+                            TextStyle {
+                                font: font.clone(),
+                                font_size: 60.0,
+                                color: Color::WHITE,
+                            },
+                        ),
+                        ScoreText::Right,
+                    ));
+                });
+        });
     // The Board
     commands.spawn(SpriteBundle {
         texture: asset_server.load("sprites/Board.png"),
@@ -27,53 +105,6 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
         }),
         ..default()
     });
-    // Size of the Scorebar - 341x47
-    // commands.spawn(SpriteBundle {
-    //     texture: asset_server.load("sprites/ScoreBar.png"),
-    //     ..default()
-    // });
-    commands.spawn((
-        TextBundle::from_sections([
-            TextSection::new(
-                "Score: ",
-                TextStyle {
-                    font: asset_server.load("fonts/Teko-Regular.ttf"),
-                    font_size: 60.0,
-                    color: Color::WHITE,
-                },
-            ),
-            TextSection::new(
-                "0",
-                TextStyle {
-                    font: asset_server.load("fonts/Teko-Regular.ttf"),
-                    font_size: 60.0,
-                    color: Color::BLUE,
-                },
-            ),
-        ]),
-        ScoreText::Left,
-    ));
-    commands.spawn((
-        TextBundle::from_sections([
-            TextSection::new(
-                "Score: ",
-                TextStyle {
-                    font: asset_server.load("fonts/Teko-Regular.ttf"),
-                    font_size: 60.0,
-                    color: Color::WHITE,
-                },
-            ),
-            TextSection::new(
-                "0",
-                TextStyle {
-                    font: asset_server.load("fonts/Teko-Regular.ttf"),
-                    font_size: 60.0,
-                    color: Color::ORANGE,
-                },
-            ),
-        ]),
-        ScoreText::Right,
-    ));
 }
 
 fn update_score_text(
@@ -84,8 +115,8 @@ fn update_score_text(
         let score = score_changed.0;
         for (mut text, score_text) in text_query.iter_mut() {
             match score_text {
-                ScoreText::Right => text.sections[1].value = format!("{}", score.left_score),
-                ScoreText::Left => text.sections[1].value = format!("{}", score.right_score),
+                ScoreText::Right => text.sections[0].value = format!("{}", score.left_score),
+                ScoreText::Left => text.sections[0].value = format!("{}", score.right_score),
             }
         }
     }

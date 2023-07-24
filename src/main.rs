@@ -25,12 +25,13 @@ fn main() {
                 }),
                 ..default()
             }),
+            // Set up the main game plugins
             BallPlugin,
             PaddlePlugin,
             ScorePlugin,
             UiPlugin,
         ))
-        .add_systems(Startup, (setup, ui::setup_ui))
+        .add_systems(Startup, setup)
         .run();
 }
 
