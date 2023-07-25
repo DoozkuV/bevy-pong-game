@@ -11,6 +11,9 @@ mod score;
 use score::{Score, ScorePlugin};
 mod ui;
 use ui::UiPlugin;
+pub const WINDOW_WIDTH: f32 = 802.;
+pub const WINDOW_HEIGHT: f32 = 455.;
+pub const UI_HEIGHT: f32 = 47.;
 
 fn main() {
     App::new()
@@ -18,7 +21,7 @@ fn main() {
             // Set the resolution
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
-                    resolution: (802., 502.).into(),
+                    resolution: (WINDOW_WIDTH, WINDOW_HEIGHT).into(),
                     resizable: false,
                     title: "Pong".to_string(),
                     ..default()
@@ -38,11 +41,15 @@ fn main() {
 fn setup(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    window_query: Query<&mut Window, With<PrimaryWindow>>,
+    mut window_query: Query<&mut Window, With<PrimaryWindow>>,
 ) {
-    let window = window_query
-        .get_single()
-        .expect("Only one primary window should exist!");
+    let new_window_height = WINDOW_HEIGHT - 47.;
+
+    window_query
+        .get_single_mut()
+        .expect("Only one primary window should exist!")
+        .resolution
+        .set(WINDOW_WIDTH, new_window_height);
 
     commands.spawn(Camera2dBundle::default());
 
@@ -61,7 +68,7 @@ fn setup(
     commands.spawn((
         SpriteBundle {
             texture: asset_server.load("sprites/Computer.png"),
-            transform: Transform::from_xyz((-window.width() / 2.0) + PADDLE_WIDTH, 0.0, 1.0),
+            transform: Transform::from_xyz((-WINDOW_WIDTH / 2.0) + PADDLE_WIDTH, 0.0, 1.0),
             ..default()
         },
         Paddle,
@@ -72,7 +79,7 @@ fn setup(
     commands.spawn((
         SpriteBundle {
             texture: asset_server.load("sprites/Player.png"),
-            transform: Transform::from_xyz((window.width() / 2.0) - PADDLE_WIDTH, 0.0, 1.0),
+            transform: Transform::from_xyz((WINDOW_WIDTH / 2.0) - PADDLE_WIDTH, 0.0, 1.0),
             ..default()
         },
         Paddle,

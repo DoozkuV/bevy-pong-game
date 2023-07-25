@@ -1,3 +1,5 @@
+use crate::UI_HEIGHT;
+
 use super::paddle::{Paddle, PADDLE_HEIGHT, PADDLE_WIDTH};
 use super::score::{Score, ScoreChanged};
 use bevy::prelude::*;
@@ -72,7 +74,7 @@ fn ball_movement(
         let x_min = -horizontal_border + half_ball_size;
         let x_max = horizontal_border - half_ball_size;
         let y_min = -vertical_border + half_ball_size;
-        let y_max = vertical_border - half_ball_size;
+        let y_max = vertical_border - UI_HEIGHT - half_ball_size;
 
         // Check if the player is out of bounds, reverse velocity if so
         if ball_translation.y < y_min || ball_translation.y > y_max {

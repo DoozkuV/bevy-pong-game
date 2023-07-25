@@ -26,12 +26,13 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
         .spawn(NodeBundle {
             style: Style {
                 width: Val::Percent(100.0),
-                height: Val::Percent(25.0),
+                height: Val::Percent(10.0),
                 align_items: AlignItems::FlexStart,
                 justify_content: JustifyContent::SpaceBetween,
                 ..default()
             },
-            // background_color: Color::BLACK.into(),
+            z_index: ZIndex::Global(-1),
+            background_color: Color::rgb_u8(0, 3, 11).into(),
             ..default()
         })
         .with_children(|parent| {
@@ -43,11 +44,11 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                             width: Val::Px(341.0),
                             height: Val::Px(47.0),
                             justify_content: JustifyContent::Center,
-                            align_content: AlignContent::Center,
+                            align_items: AlignItems::Center,
                             ..default()
                         },
-                        // A NodeBundle is transparent by default, so to to see the image we have to
-                        // change its color to WHITE
+                        // A NodeBundle is transparent by default, so to to see
+                        // the image we have to change its color to WHITE
                         background_color: Color::WHITE.into(),
                         ..default()
                     },
