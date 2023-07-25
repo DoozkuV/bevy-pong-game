@@ -60,7 +60,6 @@ fn setup(
             // transform: Transform::IDENTITY, // Object should be centered
             ..default()
         },
-        // Spawns a ball with default speed
         Ball::default(),
     ));
 

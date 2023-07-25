@@ -1,4 +1,6 @@
 use crate::{UI_HEIGHT, WINDOW_HEIGHT, WINDOW_WIDTH};
+use rand::{thread_rng, Rng};
+use std::f32::consts::PI;
 
 use super::paddle::{Paddle, PADDLE_HEIGHT, PADDLE_WIDTH};
 use super::score::{Score, ScoreChanged};
@@ -7,6 +9,7 @@ use bevy::sprite::collide_aabb::collide;
 
 const BALL_SIZE: f32 = 30.;
 const BALL_DEFAULT_SPEED: f32 = 800.;
+const BALL_SERVE_MULTIPLIER: f32 = 0.65;
 
 pub struct BallPlugin;
 
@@ -27,21 +30,24 @@ pub struct Ball {
 
 impl Default for Ball {
     fn default() -> Self {
+        let mut rng = thread_rng();
         Ball {
             serve_left: true,
-            velocity: Vec2::new(rand::random::<f32>(), rand::random::<f32>()).normalize()
-                * (BALL_DEFAULT_SPEED / 1.5),
+            // velocity: Vec2::new(rand::random::<f32>(), rand::random::<f32>()).normalize()
+            velocity: Vec2::from_angle(rng.gen_range((7.0 * PI) / 4.0..(9.0 * PI) / 4.0))
+                * (BALL_DEFAULT_SPEED * BALL_SERVE_MULTIPLIER),
         }
     }
 }
 
 impl Ball {
     fn serve(&mut self) {
-        let x_multiplier = if self.serve_left { -1.0 } else { 1.0 };
+        let serve_modifier = if self.serve_left { 0.0 } else { PI };
         self.serve_left = !self.serve_left;
-        self.velocity = Vec2::new(rand::random::<f32>() * x_multiplier, rand::random::<f32>())
-            .normalize()
-            * (BALL_DEFAULT_SPEED / 1.5);
+        let mut rng = thread_rng();
+        self.velocity =
+            Vec2::from_angle(rng.gen_range((7.0 * PI) / 4.0..(9.0 * PI) / 4.0) + serve_modifier)
+                * (BALL_DEFAULT_SPEED * BALL_SERVE_MULTIPLIER);
     }
 }
 
@@ -138,7 +144,7 @@ fn serve_on_button_press(
     mut ball_query: Query<(&mut Transform, &mut Ball)>,
     keyboard_input: Res<Input<KeyCode>>,
 ) {
-    if keyboard_input.pressed(KeyCode::R) {
+    if keyboard_input.just_pressed(KeyCode::R) {
         for (mut transform, mut ball) in ball_query.iter_mut() {
             *transform = Transform::IDENTITY;
             ball.serve();
