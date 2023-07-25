@@ -1,4 +1,4 @@
-use crate::UI_HEIGHT;
+use crate::{UI_HEIGHT, WINDOW_HEIGHT, WINDOW_WIDTH};
 
 use super::paddle::{Paddle, PADDLE_HEIGHT, PADDLE_WIDTH};
 use super::score::{Score, ScoreChanged};
@@ -51,15 +51,10 @@ fn ball_movement(
     mut ball_query: Query<(&mut Transform, &mut Ball)>,
     // For hitbox calculations
     paddle_query: Query<&Transform, (With<Paddle>, Without<Ball>)>,
-    window_query: Query<&Window, With<PrimaryWindow>>,
     // Manipulating the score
     score_query: Query<&Score>,
     mut score_event: EventWriter<ScoreChanged>,
 ) {
-    // Unwrap the queries
-    let window = window_query
-        .get_single()
-        .expect("Only one primary window should exist!");
     let score = score_query
         .get_single()
         .expect("Only one score object should exist at a time!");
@@ -69,18 +64,14 @@ fn ball_movement(
 
         // Border collision handling
         let half_ball_size = BALL_SIZE / 2.0;
-        let horizontal_border = window.width() / 2.0;
-        let vertical_border = window.height() / 2.0;
+        let horizontal_border = WINDOW_WIDTH / 2.0;
+        let vertical_border = WINDOW_HEIGHT / 2.0;
         let x_min = -horizontal_border + half_ball_size;
         let x_max = horizontal_border - half_ball_size;
         let y_min = -vertical_border + half_ball_size;
         let y_max = vertical_border - UI_HEIGHT - half_ball_size;
 
-        // Check if the player is out of bounds, reverse velocity if so
-        if ball_translation.y < y_min || ball_translation.y > y_max {
-            ball.velocity.y *= -1.0;
-        }
-
+        // Check for collisions with the goals
         if ball_translation.x < x_min {
             ball.velocity.x *= -1.0;
             score_event.send(ScoreChanged(Score {
@@ -114,6 +105,15 @@ fn ball_movement(
                 .normalize()
                     * BALL_DEFAULT_SPEED;
             }
+        }
+
+        // Check for collisions with top/bottom borders
+        if ball_translation.y < y_min {
+            ball_translation.y = y_min;
+            ball.velocity.y *= -1.0;
+        } else if ball_translation.y > y_max {
+            ball_translation.y = y_max;
+            ball.velocity.y *= -1.0;
         }
 
         // Begin to move the ball
