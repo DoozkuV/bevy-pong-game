@@ -1,3 +1,5 @@
+use crate::UI_HEIGHT;
+
 use super::score::ScoreChanged;
 use bevy::prelude::*;
 
@@ -16,17 +18,15 @@ impl Plugin for UiPlugin {
     }
 }
 
-/// This function sets up the UI for the score in our game;
-/// Instantiating the Text elements that will later be used to store the score.
 pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
     let font = asset_server.load("fonts/Teko-Regular.ttf");
 
-    // Flex UI setup
+    // Spawn the top-Scorebar
     commands
         .spawn(NodeBundle {
             style: Style {
                 width: Val::Percent(100.0),
-                height: Val::Percent(10.0),
+                height: Val::Px(UI_HEIGHT),
                 align_items: AlignItems::FlexStart,
                 justify_content: JustifyContent::SpaceBetween,
                 ..default()
@@ -54,6 +54,7 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                     },
                     UiImage::new(asset_server.load("sprites/ScoreBar.png")),
                 ))
+                // Left Scoretext
                 .with_children(|parent| {
                     parent.spawn((
                         TextBundle::from_section(
@@ -83,6 +84,7 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                     },
                     UiImage::new(asset_server.load("sprites/ScoreBar.png")).with_flip_x(),
                 ))
+                // Right Scoretext
                 .with_children(|parent| {
                     parent.spawn((
                         TextBundle::from_section(

@@ -83,7 +83,10 @@ fn setup(
             ..default()
         },
         Paddle,
-        Player,
+        Player {
+            input_up: KeyCode::W,
+            input_down: KeyCode::S,
+        },
     ));
     // Initialize a score of 0,0
     commands.spawn(Score::default());

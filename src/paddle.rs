@@ -6,10 +6,7 @@ use bevy::prelude::*;
 const PADDLE_SPEED: f32 = 500.;
 pub const PADDLE_HEIGHT: f32 = 120.;
 pub const PADDLE_WIDTH: f32 = 17.;
-const AI_SPEED_MODIFIER: f32 = 1.;
-
-const INPUT_UP: KeyCode = KeyCode::W;
-const INPUT_DOWN: KeyCode = KeyCode::S;
+const AI_SPEED_MODIFIER: f32 = 0.8;
 
 pub struct PaddlePlugin;
 
@@ -22,25 +19,26 @@ impl Plugin for PaddlePlugin {
 pub struct Paddle;
 
 #[derive(Component)]
-pub struct Player;
+pub struct Player {
+    pub input_up: KeyCode,
+    pub input_down: KeyCode,
+}
 
 #[derive(Component)]
 pub struct Computer;
 
 fn player_control(
-    mut player_query: Query<&mut Transform, With<Player>>,
+    mut player_query: Query<(&mut Transform, &Player)>,
     keyboard_input: Res<Input<KeyCode>>,
     time: Res<Time>,
 ) {
-    let mut transform = player_query
-        .get_single_mut()
-        .expect("Only one player has been implemented yet!");
-
-    if keyboard_input.pressed(INPUT_UP) {
-        move_paddle(&mut transform, 1.0, &time);
-    }
-    if keyboard_input.pressed(INPUT_DOWN) {
-        move_paddle(&mut transform, -1.0, &time);
+    for (mut transform, player) in player_query.iter_mut() {
+        if keyboard_input.pressed(player.input_up) {
+            move_paddle(&mut transform, 1.0, &time);
+        }
+        if keyboard_input.pressed(player.input_down) {
+            move_paddle(&mut transform, -1.0, &time);
+        }
     }
 }
 

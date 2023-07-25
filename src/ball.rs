@@ -4,7 +4,6 @@ use super::paddle::{Paddle, PADDLE_HEIGHT, PADDLE_WIDTH};
 use super::score::{Score, ScoreChanged};
 use bevy::prelude::*;
 use bevy::sprite::collide_aabb::collide;
-use bevy::window::PrimaryWindow;
 
 const BALL_SIZE: f32 = 30.;
 const BALL_DEFAULT_SPEED: f32 = 800.;
