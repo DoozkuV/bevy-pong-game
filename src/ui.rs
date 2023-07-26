@@ -115,7 +115,7 @@ fn update_score_text(
     mut change_events: EventReader<ScoreChanged>,
 ) {
     for score_changed in change_events.iter() {
-        let score = score_changed.0;
+        let score = &score_changed.0;
         for (mut text, score_text) in text_query.iter_mut() {
             match score_text {
                 ScoreText::Right => text.sections[0].value = format!("{}", score.left_score),

@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy::window::PrimaryWindow;
 
 mod ball;
 use ball::{Ball, BallPlugin};
@@ -11,8 +10,11 @@ mod score;
 use score::{Score, ScorePlugin};
 mod ui;
 use ui::UiPlugin;
+
+// Consts to define the resolution of the game window in pixels
 pub const WINDOW_WIDTH: f32 = 802.;
 pub const WINDOW_HEIGHT: f32 = 455.;
+// Defines the pixel height of the top UI Scorebar
 pub const UI_HEIGHT: f32 = 47.;
 
 fn main() {
@@ -38,26 +40,13 @@ fn main() {
         .run();
 }
 
-fn setup(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut window_query: Query<&mut Window, With<PrimaryWindow>>,
-) {
-    let new_window_height = WINDOW_HEIGHT - 47.;
-
-    window_query
-        .get_single_mut()
-        .expect("Only one primary window should exist!")
-        .resolution
-        .set(WINDOW_WIDTH, new_window_height);
-
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(Camera2dBundle::default());
 
     // Spawn the ball
     commands.spawn((
         SpriteBundle {
             texture: asset_server.load("sprites/Ball.png"),
-            // transform: Transform::IDENTITY, // Object should be centered
             ..default()
         },
         Ball::default(),

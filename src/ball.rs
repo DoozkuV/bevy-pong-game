@@ -33,7 +33,6 @@ impl Default for Ball {
         let mut rng = thread_rng();
         Ball {
             serve_left: true,
-            // velocity: Vec2::new(rand::random::<f32>(), rand::random::<f32>()).normalize()
             velocity: Vec2::from_angle(rng.gen_range((7.0 * PI) / 4.0..(9.0 * PI) / 4.0))
                 * (BALL_DEFAULT_SPEED * BALL_SERVE_MULTIPLIER),
         }
@@ -44,6 +43,7 @@ impl Ball {
     fn serve(&mut self) {
         let serve_modifier = if self.serve_left { 0.0 } else { PI };
         self.serve_left = !self.serve_left;
+
         let mut rng = thread_rng();
         self.velocity =
             Vec2::from_angle(rng.gen_range((7.0 * PI) / 4.0..(9.0 * PI) / 4.0) + serve_modifier)
