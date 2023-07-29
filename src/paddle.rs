@@ -18,12 +18,6 @@ impl Plugin for PaddlePlugin {
 #[derive(Component)]
 pub struct Paddle;
 
-// #[derive(Component)]
-// pub struct Player {
-//     pub input_up: KeyCode,
-//     pub input_down: KeyCode,
-// }
-
 #[derive(Component)]
 pub enum Controller {
     Computer,
@@ -32,24 +26,6 @@ pub enum Controller {
         input_down: KeyCode,
     },
 }
-
-// #[derive(Component)]
-// pub struct Computer;
-
-// fn player_control(
-//     mut player_query: Query<(&mut Transform, &Player)>,
-//     keyboard_input: Res<Input<KeyCode>>,
-//     time: Res<Time>,
-// ) {
-//     for (mut transform, player) in player_query.iter_mut() {
-//         if keyboard_input.pressed(player.input_up) {
-//             move_paddle(&mut transform, 1.0, &time);
-//         }
-//         if keyboard_input.pressed(player.input_down) {
-//             move_paddle(&mut transform, -1.0, &time);
-//         }
-//     }
-// }
 
 fn paddle_control(
     mut paddle_query: Query<(&mut Transform, &Controller), Without<Ball>>,
@@ -86,29 +62,6 @@ fn paddle_control(
         }
     }
 }
-
-// fn computer_control(
-//     ball_query: Query<&Transform, With<Ball>>,
-//     mut paddle_query: Query<(&mut Transform, &Controller), Without<Ball>>,
-//     time: Res<Time>,
-// ) {
-//     // Extract out the variables
-//     let ball_y_pos = ball_query
-//         .get_single()
-//         .expect("Only one ball has been implemented yet!")
-//         .translation
-//         .y;
-
-//     // Loop over every computer found
-//     for mut transform in paddle_query.iter_mut() {
-//         // Move the paddle towards the ball
-//         if ball_y_pos > transform.translation.y {
-//             move_paddle(&mut transform, AI_SPEED_MODIFIER, &time);
-//         } else {
-//             move_paddle(&mut transform, -AI_SPEED_MODIFIER, &time);
-//         }
-//     }
-// }
 
 fn move_paddle(transform: &mut Transform, multiplier: f32, time: &Time) {
     let half_paddle_height = PADDLE_HEIGHT / 2.0;
