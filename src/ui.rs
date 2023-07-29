@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::UI_HEIGHT;
+use crate::{AppState, MAIN_FONT, UI_HEIGHT};
 
 use super::score::ScoreChanged;
 use bevy::prelude::*;
@@ -32,13 +32,16 @@ impl TimerText {
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup_ui)
-            .add_systems(Update, (update_score_text, update_timer));
+        app.add_systems(OnEnter(AppState::Game), setup_ui)
+            .add_systems(
+                Update,
+                (update_score_text, update_timer).run_if(in_state(AppState::Game)),
+            );
     }
 }
 
 pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let font = asset_server.load("fonts/Teko-Regular.ttf");
+    let font = asset_server.load(MAIN_FONT);
 
     // Spawn the top-Scorebar
     commands

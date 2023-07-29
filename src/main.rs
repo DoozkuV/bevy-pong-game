@@ -1,10 +1,12 @@
 use bevy::prelude::*;
 
+mod menu;
+
 mod ball;
 use ball::{Ball, BallPlugin};
 
 mod paddle;
-use paddle::{Computer, Paddle, PaddlePlugin, Player, PADDLE_WIDTH};
+use paddle::{Controller, Paddle, PaddlePlugin, PADDLE_WIDTH};
 
 mod score;
 use score::{Score, ScorePlugin};
@@ -16,6 +18,16 @@ pub const WINDOW_WIDTH: f32 = 802.;
 pub const WINDOW_HEIGHT: f32 = 455.;
 // Defines the pixel height of the top UI Scorebar
 pub const UI_HEIGHT: f32 = 47.;
+// Main font to be used
+pub const MAIN_FONT: &str = "fonts/Teko-Regular.ttf";
+
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
+pub enum AppState {
+    #[default]
+    MainMenu,
+    Game,
+    End,
+}
 
 fn main() {
     App::new()
@@ -36,7 +48,9 @@ fn main() {
             ScorePlugin,
             UiPlugin,
         ))
-        .add_systems(Startup, setup)
+        .add_state::<AppState>()
+        .add_systems(Startup, menu::setup_menu)
+        .add_systems(OnEnter(AppState::Game), setup)
         .run();
 }
 
@@ -60,7 +74,14 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         },
         Paddle,
-        Computer,
+        if false {
+            Controller::Player {
+                input_up: KeyCode::W,
+                input_down: KeyCode::S,
+            }
+        } else {
+            Controller::Computer
+        },
     ));
 
     // Spawn the right-most paddle
@@ -71,11 +92,12 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         },
         Paddle,
-        Player {
+        Controller::Player {
             input_up: KeyCode::W,
             input_down: KeyCode::S,
         },
     ));
+
     // Initialize a score of 0,0
     commands.spawn(Score::default());
 }

@@ -1,4 +1,4 @@
-use crate::{UI_HEIGHT, WINDOW_HEIGHT, WINDOW_WIDTH};
+use crate::{AppState, UI_HEIGHT, WINDOW_HEIGHT, WINDOW_WIDTH};
 use rand::{thread_rng, Rng};
 use std::f32::consts::PI;
 
@@ -17,7 +17,8 @@ impl Plugin for BallPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            (ball_movement, serve_on_score_change, serve_on_button_press),
+            (ball_movement, serve_on_score_change, serve_on_button_press)
+                .run_if(in_state(AppState::Game)),
         );
     }
 }

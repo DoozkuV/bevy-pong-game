@@ -1,11 +1,13 @@
 use bevy::prelude::*;
 
+use crate::AppState;
+
 pub struct ScorePlugin;
 
 impl Plugin for ScorePlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<ScoreChanged>()
-            .add_systems(Update, update_score);
+            .add_systems(Update, update_score.run_if(in_state(AppState::Game)));
     }
 }
 
