@@ -39,6 +39,7 @@ fn paddle_control(
                 input_up,
                 input_down,
             } => {
+                // Move the paddle based on user input
                 if keyboard_input.pressed(input_up) {
                     move_paddle(&mut transform, 1.0, &time);
                 }
@@ -47,12 +48,14 @@ fn paddle_control(
                 }
             }
             Controller::Computer => {
+                // Extract the ball query
                 let ball_y_pos = ball_query
                     .get_single()
                     .expect("Only one ball has been implemented yet!")
                     .translation
                     .y;
 
+                // Move the paddle towards the ball
                 if ball_y_pos > transform.translation.y {
                     move_paddle(&mut transform, AI_SPEED_MODIFIER, &time);
                 } else {

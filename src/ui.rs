@@ -32,7 +32,7 @@ impl TimerText {
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(AppState::Game), setup_ui)
+        app.add_systems(OnEnter(AppState::Game), setup_game_ui)
             .add_systems(
                 Update,
                 (update_score_text, update_timer).run_if(in_state(AppState::Game)),
@@ -40,7 +40,7 @@ impl Plugin for UiPlugin {
     }
 }
 
-pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn setup_game_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
     let font = asset_server.load(MAIN_FONT);
 
     // Spawn the top-Scorebar
