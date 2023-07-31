@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, window::close_on_esc};
 
 mod menu;
 use menu::MenuPlugin;
@@ -58,5 +58,8 @@ fn main() {
             GamePlugin,
         ))
         .add_state::<AppState>()
+        // Built in bevy utility func for testing
+        .add_systems(Update, close_on_esc)
         .run();
 }
+

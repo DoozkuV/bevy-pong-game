@@ -17,7 +17,7 @@ impl Plugin for BallPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            (ball_movement, serve_on_score_change, serve_on_button_press)
+            (ball_movement, serve_on_score_change, )
                 .run_if(in_state(AppState::Game)),
         );
     }
@@ -134,18 +134,6 @@ fn serve_on_score_change(
     mut score_event: EventReader<ScoreChanged>,
 ) {
     for _ in score_event.iter() {
-        for (mut transform, mut ball) in ball_query.iter_mut() {
-            *transform = Transform::IDENTITY;
-            ball.serve();
-        }
-    }
-}
-
-fn serve_on_button_press(
-    mut ball_query: Query<(&mut Transform, &mut Ball)>,
-    keyboard_input: Res<Input<KeyCode>>,
-) {
-    if keyboard_input.just_pressed(KeyCode::R) {
         for (mut transform, mut ball) in ball_query.iter_mut() {
             *transform = Transform::IDENTITY;
             ball.serve();
