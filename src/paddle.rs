@@ -15,11 +15,9 @@ impl Plugin for PaddlePlugin {
         app.add_systems(Update, paddle_control.run_if(in_state(AppState::Game)));
     }
 }
-#[derive(Component)]
-pub struct Paddle;
 
 #[derive(Component)]
-pub enum Controller {
+pub enum Paddle {
     Computer,
     Player {
         input_up: KeyCode,
@@ -28,14 +26,14 @@ pub enum Controller {
 }
 
 fn paddle_control(
-    mut paddle_query: Query<(&mut Transform, &Controller), Without<Ball>>,
+    mut paddle_query: Query<(&mut Transform, &Paddle), Without<Ball>>,
     ball_query: Query<&Transform, With<Ball>>,
     keyboard_input: Res<Input<KeyCode>>,
     time: Res<Time>,
 ) {
     for (mut transform, controller) in paddle_query.iter_mut() {
         match *controller {
-            Controller::Player {
+            Paddle::Player {
                 input_up,
                 input_down,
             } => {
@@ -47,7 +45,7 @@ fn paddle_control(
                     move_paddle(&mut transform, -1.0, &time);
                 }
             }
-            Controller::Computer => {
+            Paddle::Computer => {
                 // Extract the ball query
                 let ball_y_pos = ball_query
                     .get_single()

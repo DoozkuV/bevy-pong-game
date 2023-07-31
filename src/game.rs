@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::ball::Ball;
 use crate::menu::MenuData;
-use crate::paddle::{Controller, Paddle, PADDLE_WIDTH};
+use crate::paddle::{Paddle, PADDLE_WIDTH};
 use crate::score::Score;
 use crate::{AppState, WINDOW_WIDTH};
 
@@ -31,11 +31,10 @@ fn setup_game(mut commands: Commands, asset_server: Res<AssetServer>, menu_data:
             transform: Transform::from_xyz((-WINDOW_WIDTH / 2.0) + PADDLE_WIDTH, 0.0, 1.0),
             ..default()
         },
-        Paddle,
         if menu_data.is_single_player {
-            Controller::Computer
+            Paddle::Computer
         } else {
-            Controller::Player {
+            Paddle::Player {
                 input_up: KeyCode::W,
                 input_down: KeyCode::S,
             }
@@ -49,8 +48,7 @@ fn setup_game(mut commands: Commands, asset_server: Res<AssetServer>, menu_data:
             transform: Transform::from_xyz((WINDOW_WIDTH / 2.0) - PADDLE_WIDTH, 0.0, 1.0),
             ..default()
         },
-        Paddle,
-        Controller::Player {
+        Paddle::Player {
             input_up: KeyCode::Up,
             input_down: KeyCode::Down,
         },

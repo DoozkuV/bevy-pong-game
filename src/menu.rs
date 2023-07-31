@@ -145,7 +145,7 @@ fn button_system(
             }
             Interaction::Hovered => {
                 *color = Color::rgb_u8(96, 36, 78).into();
-                *border_color = Color::BLUE.into();
+                *border_color = Color::INDIGO.into();
             }
             Interaction::None => {
                 *color = Color::rgb_u8(153, 48, 122).into();
