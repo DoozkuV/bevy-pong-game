@@ -31,9 +31,9 @@ fn setup_end(mut commands: Commands, asset_server: Res<AssetServer>, game_data: 
                     font: asset_server.load(MAIN_FONT),
                     font_size: 200.0,
                     color: if game_data.is_left_win {
-                        Color::BLUE
+                        Color::rgb_u8(82, 124, 215)
                     } else {
-                        Color::ORANGE
+                        Color::rgb_u8(215, 121, 82)
                     },
                 },
             ));
