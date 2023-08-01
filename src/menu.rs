@@ -8,8 +8,7 @@ impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, setup_start_menu)
             .add_systems(Update, button_system.run_if(in_state(AppState::MainMenu)))
-            .add_systems(OnExit(AppState::MainMenu), cleanup_menu)
-            ;
+            .add_systems(OnExit(AppState::MainMenu), cleanup_menu);
     }
 }
 
@@ -102,7 +101,7 @@ fn setup_start_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
 }
 
 fn cleanup_menu(mut commands: Commands, menu_data: Res<MenuData>) {
-   commands.entity(menu_data.main_ui).despawn_recursive();
+    commands.entity(menu_data.main_ui).despawn_recursive();
 }
 
 fn create_menu_button() -> ButtonBundle {

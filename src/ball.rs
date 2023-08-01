@@ -17,8 +17,7 @@ impl Plugin for BallPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            (ball_movement, serve_on_score_change, )
-                .run_if(in_state(AppState::Game)),
+            (ball_movement, serve_on_score_change).run_if(in_state(AppState::Game)),
         );
     }
 }
@@ -81,14 +80,14 @@ fn ball_movement(
         if ball_translation.x < x_min {
             ball.velocity.x *= -1.0;
             score_event.send(ScoreChanged(Score {
-                left_score: score.left_score + 1,
-                right_score: score.right_score,
+                right_score: score.right_score + 1,
+                left_score: score.left_score,
             }));
         } else if ball_translation.x > x_max {
             ball.velocity.x *= -1.0;
             score_event.send(ScoreChanged(Score {
-                left_score: score.left_score,
-                right_score: score.right_score + 1,
+                right_score: score.right_score,
+                left_score: score.left_score + 1,
             }));
         }
 

@@ -62,4 +62,3 @@ fn main() {
         .add_systems(Update, close_on_esc)
         .run();
 }
-

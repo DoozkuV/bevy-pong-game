@@ -13,8 +13,8 @@ impl Plugin for ScorePlugin {
 
 #[derive(Component, Default, Clone, Copy)]
 pub struct Score {
-    pub left_score: u32,
     pub right_score: u32,
+    pub left_score: u32,
 }
 
 #[derive(Event)]

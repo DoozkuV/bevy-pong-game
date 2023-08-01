@@ -3,14 +3,17 @@ use bevy::prelude::*;
 use crate::ball::Ball;
 use crate::menu::MenuData;
 use crate::paddle::{Paddle, PADDLE_WIDTH};
-use crate::score::Score;
+use crate::score::{Score, ScoreChanged};
 use crate::{AppState, WINDOW_WIDTH};
 
 pub struct GamePlugin;
 
+const VICTORY_POINT_REQ: u32 = 10;
+
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(AppState::Game), setup_game);
+        app.add_systems(OnEnter(AppState::Game), setup_game)
+            .add_systems(Update, check_for_win.run_if(in_state(AppState::Game)));
     }
 }
 
@@ -58,4 +61,19 @@ fn setup_game(mut commands: Commands, asset_server: Res<AssetServer>, menu_data:
     commands.spawn(Score::default());
 
     commands.remove_resource::<MenuData>();
+}
+
+fn check_for_win(
+    mut change_events: EventReader<ScoreChanged>,
+    mut next_state: ResMut<NextState<AppState>>,
+) {
+    for event in change_events.iter() {
+        if event.0.right_score >= VICTORY_POINT_REQ {
+            println!("Right wins!");
+            next_state.set(AppState::End);
+        } else if event.0.left_score >= VICTORY_POINT_REQ {
+            next_state.set(AppState::End);
+            println!("Left wins!");
+        }
+    }
 }

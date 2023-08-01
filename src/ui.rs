@@ -170,8 +170,8 @@ fn update_score_text(
         let score = &score_changed.0;
         for (mut text, score_text) in text_query.iter_mut() {
             match score_text {
-                ScoreText::Right => text.sections[0].value = format!("{}", score.left_score),
-                ScoreText::Left => text.sections[0].value = format!("{}", score.right_score),
+                ScoreText::Right => text.sections[0].value = format!("{}", score.right_score),
+                ScoreText::Left => text.sections[0].value = format!("{}", score.left_score),
             }
         }
     }
