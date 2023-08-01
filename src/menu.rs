@@ -6,13 +6,14 @@ pub struct MenuPlugin;
 
 impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup_start_menu)
-            .add_systems(Update, button_system.run_if(in_state(AppState::MainMenu)))
-            .add_systems(OnExit(AppState::MainMenu), cleanup_menu);
+        app.add_systems(OnEnter(AppState::Menu), setup_start_menu)
+            .add_systems(Update, button_system.run_if(in_state(AppState::Menu)))
+            .add_systems(OnExit(AppState::Menu), cleanup_menu);
     }
 }
 
-// Resource for controlling
+// Holds assets to be despawned as well as passing
+// singleplayer status to the next state.
 #[derive(Resource)]
 pub struct MenuData {
     main_ui: Entity,
@@ -35,20 +36,8 @@ enum StartButton {
 }
 
 fn setup_start_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn(Camera2dBundle::default());
-
     let main_ui = commands
-        .spawn(NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                align_items: AlignItems::Center,
-                justify_content: JustifyContent::Center,
-                flex_direction: FlexDirection::Column,
-                ..default()
-            },
-            background_color: Color::BLACK.into(),
-            ..default()
-        })
+        .spawn(create_ui_base()) // Generate a UI template default
         .with_children(|parent| {
             parent.spawn(TextBundle::from_section(
                 "PONG",
@@ -70,7 +59,7 @@ fn setup_start_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                 })
                 .with_children(|parent| {
                     parent
-                        .spawn((create_menu_button(), StartButton::SinglePlayer))
+                        .spawn((create_button(), StartButton::SinglePlayer))
                         .with_children(|parent| {
                             parent.spawn(TextBundle::from_section(
                                 "One Player",
@@ -82,7 +71,7 @@ fn setup_start_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                             ));
                         });
                     parent
-                        .spawn((create_menu_button(), StartButton::Multiplayer))
+                        .spawn((create_button(), StartButton::Multiplayer))
                         .with_children(|parent| {
                             parent.spawn(TextBundle::from_section(
                                 "Two Player",
@@ -104,7 +93,7 @@ fn cleanup_menu(mut commands: Commands, menu_data: Res<MenuData>) {
     commands.entity(menu_data.main_ui).despawn_recursive();
 }
 
-fn create_menu_button() -> ButtonBundle {
+pub fn create_button() -> ButtonBundle {
     ButtonBundle {
         style: Style {
             width: Val::Px(150.),
@@ -122,6 +111,19 @@ fn create_menu_button() -> ButtonBundle {
     }
 }
 
+pub fn create_ui_base() -> NodeBundle {
+    NodeBundle {
+        style: Style {
+            width: Val::Percent(100.0),
+            align_items: AlignItems::Center,
+            justify_content: JustifyContent::Center,
+            flex_direction: FlexDirection::Column,
+            ..default()
+        },
+        background_color: Color::BLACK.into(),
+        ..default()
+    }
+}
 fn button_system(
     mut interaction_query: Query<
         (
@@ -136,7 +138,6 @@ fn button_system(
     mut menu_data: ResMut<MenuData>,
 ) {
     for (interaction, mut color, mut border_color, start_button) in interaction_query.iter_mut() {
-        if *interaction == Interaction::Pressed {}
         match *interaction {
             Interaction::Pressed => {
                 menu_data.is_single_player = *start_button == StartButton::SinglePlayer;

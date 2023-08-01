@@ -7,6 +7,17 @@ use bevy::prelude::*;
 
 pub struct UiPlugin;
 
+impl Plugin for UiPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(OnEnter(AppState::Game), setup_game_ui)
+            .add_systems(
+                Update,
+                (update_score_text, update_timer).run_if(in_state(AppState::Game)),
+            )
+            .add_systems(OnExit(AppState::Game), cleanup_game_ui);
+    }
+}
+
 #[derive(Component)]
 pub enum ScoreText {
     Left,
@@ -30,56 +41,64 @@ impl TimerText {
     }
 }
 
-impl Plugin for UiPlugin {
-    fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(AppState::Game), setup_game_ui)
-            .add_systems(
-                Update,
-                (update_score_text, update_timer).run_if(in_state(AppState::Game)),
-            );
-    }
-}
+// Despawn menu when exiting game state
+#[derive(Resource)]
+struct GameUIData(Vec<Entity>);
 
 pub fn setup_game_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
     let font = asset_server.load(MAIN_FONT);
-
-    // Spawn the top-Scorebar
-    commands
-        .spawn(NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Px(UI_HEIGHT),
-                align_items: AlignItems::FlexStart,
-                justify_content: JustifyContent::SpaceBetween,
+    let game_ui = vec![
+        // Spawn the top-Scorebar
+        commands
+            .spawn(NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    height: Val::Px(UI_HEIGHT),
+                    align_items: AlignItems::FlexStart,
+                    justify_content: JustifyContent::SpaceBetween,
+                    ..default()
+                },
+                z_index: ZIndex::Global(-1),
+                background_color: Color::rgb_u8(0, 3, 11).into(),
                 ..default()
-            },
-            z_index: ZIndex::Global(-1),
-            background_color: Color::rgb_u8(0, 3, 11).into(),
-            ..default()
-        })
-        .with_children(|parent| {
-            // Left side UI Bar
-            parent
-                .spawn((
-                    NodeBundle {
-                        style: Style {
-                            width: Val::Px(341.0),
-                            height: Val::Px(47.0),
-                            justify_content: JustifyContent::Center,
-                            align_items: AlignItems::Center,
+            })
+            .with_children(|parent| {
+                // Left side UI Bar
+                parent
+                    .spawn((
+                        NodeBundle {
+                            style: Style {
+                                width: Val::Px(341.0),
+                                height: Val::Px(47.0),
+                                justify_content: JustifyContent::Center,
+                                align_items: AlignItems::Center,
+                                ..default()
+                            },
+                            // A NodeBundle is transparent by default, so to to see
+                            // the image we have to change its color to WHITE
+                            background_color: Color::WHITE.into(),
                             ..default()
                         },
-                        // A NodeBundle is transparent by default, so to to see
-                        // the image we have to change its color to WHITE
-                        background_color: Color::WHITE.into(),
-                        ..default()
-                    },
-                    UiImage::new(asset_server.load("sprites/ScoreBar.png")),
-                ))
-                // Left Scoretext
-                .with_children(|parent| {
-                    parent.spawn((
-                        TextBundle::from_section(
+                        UiImage::new(asset_server.load("sprites/ScoreBar.png")),
+                    ))
+                    // Left Scoretext
+                    .with_children(|parent| {
+                        parent.spawn((
+                            TextBundle::from_section(
+                                "0",
+                                TextStyle {
+                                    font: font.clone(),
+                                    font_size: 60.0,
+                                    color: Color::WHITE,
+                                },
+                            ),
+                            ScoreText::Left,
+                        ));
+                    });
+                // Timer
+                parent.spawn((
+                    TextBundle::from_sections([
+                        TextSection::new(
                             "0",
                             TextStyle {
                                 font: font.clone(),
@@ -87,79 +106,71 @@ pub fn setup_game_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                                 color: Color::WHITE,
                             },
                         ),
-                        ScoreText::Left,
-                    ));
-                });
-            // Timer
-            parent.spawn((
-                TextBundle::from_sections([
-                    TextSection::new(
-                        "0",
-                        TextStyle {
-                            font: font.clone(),
-                            font_size: 60.0,
-                            color: Color::WHITE,
-                        },
-                    ),
-                    TextSection::new(
-                        ":",
-                        TextStyle {
-                            font: font.clone(),
-                            font_size: 60.0,
-                            color: Color::WHITE,
-                        },
-                    ),
-                    TextSection::new(
-                        "00",
-                        TextStyle {
-                            font: font.clone(),
-                            font_size: 60.0,
-                            color: Color::WHITE,
-                        },
-                    ),
-                ]),
-                TimerText::new(),
-            ));
-            // Right side UI Bar
-            parent
-                .spawn((
-                    NodeBundle {
-                        style: Style {
-                            width: Val::Px(341.0),
-                            height: Val::Px(47.0),
-                            justify_content: JustifyContent::Center,
-                            align_items: AlignItems::Center,
-                            ..default()
-                        },
-                        background_color: Color::WHITE.into(),
-                        ..default()
-                    },
-                    UiImage::new(asset_server.load("sprites/ScoreBar.png")).with_flip_x(),
-                ))
-                // Right Scoretext
-                .with_children(|parent| {
-                    parent.spawn((
-                        TextBundle::from_section(
-                            "0",
+                        TextSection::new(
+                            ":",
                             TextStyle {
                                 font: font.clone(),
                                 font_size: 60.0,
                                 color: Color::WHITE,
                             },
                         ),
-                        ScoreText::Right,
-                    ));
-                });
-        });
-    // The Board
-    commands.spawn(SpriteBundle {
-        texture: asset_server.load("sprites/Board.png"),
-        transform: Transform::from_translation(Vec3 {
-            y: -47.,
-            ..default()
-        }),
-        ..default()
-    });
+                        TextSection::new(
+                            "00",
+                            TextStyle {
+                                font: font.clone(),
+                                font_size: 60.0,
+                                color: Color::WHITE,
+                            },
+                        ),
+                    ]),
+                    TimerText::new(),
+                ));
+                // Right side UI Bar
+                parent
+                    .spawn((
+                        NodeBundle {
+                            style: Style {
+                                width: Val::Px(341.0),
+                                height: Val::Px(47.0),
+                                justify_content: JustifyContent::Center,
+                                align_items: AlignItems::Center,
+                                ..default()
+                            },
+                            background_color: Color::WHITE.into(),
+                            ..default()
+                        },
+                        UiImage::new(asset_server.load("sprites/ScoreBar.png")).with_flip_x(),
+                    ))
+                    // Right Scoretext
+                    .with_children(|parent| {
+                        parent.spawn((
+                            TextBundle::from_section(
+                                "0",
+                                TextStyle {
+                                    font: font.clone(),
+                                    font_size: 60.0,
+                                    color: Color::WHITE,
+                                },
+                            ),
+                            ScoreText::Right,
+                        ));
+                    });
+            })
+            .id(),
+        // The Board
+        commands
+            .spawn(SpriteBundle {
+                texture: asset_server.load("sprites/Board.png"),
+                transform: Transform::from_translation(Vec3 {
+                    y: -47.,
+                    ..default()
+                }),
+                ..default()
+            })
+            .id(),
+    ];
+
+    commands.insert_resource(GameUIData(game_ui));
 }
 
 fn update_score_text(
@@ -199,4 +210,13 @@ fn update_timer(mut text_query: Query<(&mut Text, &mut TimerText)>, time: Res<Ti
     } else {
         timer_text.seconds.to_string()
     }
+}
+
+fn cleanup_game_ui(mut commands: Commands, game_ui_data: Res<GameUIData>) {
+    for entitiy in game_ui_data.0.iter() {
+        // Despawn recursive for the nested UI element
+        commands.entity(*entitiy).despawn_recursive();
+    }
+    // Game UI data is not needed any longer
+    commands.remove_resource::<GameUIData>();
 }

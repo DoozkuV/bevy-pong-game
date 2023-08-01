@@ -18,6 +18,9 @@ use score::ScorePlugin;
 mod ui;
 use ui::UiPlugin;
 
+mod end;
+use end::EndPlugin;
+
 // Consts to define the resolution of the game window in pixels
 pub const WINDOW_WIDTH: f32 = 802.;
 pub const WINDOW_HEIGHT: f32 = 455.;
@@ -29,7 +32,7 @@ pub const MAIN_FONT: &str = "fonts/Teko-Regular.ttf";
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum AppState {
     #[default]
-    MainMenu,
+    Menu,
     Game,
     End,
 }
@@ -56,9 +59,17 @@ fn main() {
             // These plugins concern the actual running of the game
             MenuPlugin,
             GamePlugin,
+            EndPlugin,
         ))
         .add_state::<AppState>()
+        // Do this outside of any state management
+        .add_systems(Startup, init_game)
         // Built in bevy utility func for testing
         .add_systems(Update, close_on_esc)
         .run();
+}
+
+// Spawns the camera and does other initialization functionality
+fn init_game(mut commands: Commands) {
+    commands.spawn(Camera2dBundle::default());
 }
