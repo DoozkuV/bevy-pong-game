@@ -58,6 +58,10 @@ fn ball_movement(
     paddle_query: Query<&Transform, (With<Paddle>, Without<Ball>)>,
     // Manipulating the score
     score_query: Query<&Score>,
+    // Sound effect upon bouncing off a wall
+    sound_query: Query<(), With<AudioSink>>,
+    asset_server: Res<AssetServer>,
+    mut commands: Commands,
     mut score_event: EventWriter<ScoreChanged>,
 ) {
     let score = score_query
@@ -91,6 +95,8 @@ fn ball_movement(
             }));
         }
 
+        let mut should_sound_play = false;
+
         // Check for collisions with paddles
         for paddle_transform in paddle_query.into_iter() {
             if collide(
@@ -109,6 +115,8 @@ fn ball_movement(
                 )
                 .normalize()
                     * BALL_DEFAULT_SPEED;
+                should_sound_play = true;
+                // Create the sound effect upon hitting a wall
             }
         }
 
@@ -116,14 +124,20 @@ fn ball_movement(
         if ball_translation.y < y_min {
             ball_translation.y = y_min;
             ball.velocity.y *= -1.0;
+            should_sound_play = true;
         } else if ball_translation.y > y_max {
             ball_translation.y = y_max;
             ball.velocity.y *= -1.0;
+            should_sound_play = true;
         }
 
         // Begin to move the ball
         ball_translation.x += ball.velocity.x * time.delta_seconds();
         ball_translation.y += ball.velocity.y * time.delta_seconds();
+        // Play sound effects
+        if should_sound_play && sound_query.is_empty() {
+            commands.spawn(create_hit_sound(&asset_server));
+        }
     }
 }
 
@@ -137,5 +151,12 @@ fn serve_on_score_change(
             *transform = Transform::IDENTITY;
             ball.serve();
         }
+    }
+}
+
+fn create_hit_sound(asset_server: &Res<AssetServer>) -> AudioBundle {
+    AudioBundle {
+        source: asset_server.load("sounds/hit_sound.wav"),
+        settings: PlaybackSettings::DESPAWN,
     }
 }

@@ -1,3 +1,4 @@
+use bevy::audio::VolumeLevel;
 use bevy::prelude::*;
 use bevy::window::close_on_esc;
 
@@ -30,6 +31,9 @@ pub const WINDOW_HEIGHT: f32 = 455.;
 pub const UI_HEIGHT: f32 = 47.;
 // Main font to be used
 pub const MAIN_FONT: &str = "fonts/Teko-Regular.ttf";
+
+// Set the global volume. The default volume is set to 1
+const VOLUME_LEVEL: f32 = 0.5;
 
 /// State management Enum to be used throughout the entire project.
 /// Each state corresponds to a different screen in the game as well
@@ -82,6 +86,7 @@ fn main() {
 }
 
 // Spawns the camera and does other initialization functionality
-fn init_game(mut commands: Commands) {
+fn init_game(mut commands: Commands, mut global_volume: ResMut<GlobalVolume>) {
     commands.spawn(Camera2dBundle::default());
+    global_volume.volume = VolumeLevel::new(VOLUME_LEVEL);
 }
