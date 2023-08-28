@@ -69,7 +69,7 @@ fn ball_movement(
         .expect("Only one score object should exist at a time!");
 
     for (mut ball_transform, mut ball) in ball_query.iter_mut() {
-        let mut ball_translation = &mut ball_transform.translation;
+        let ball_translation = &mut ball_transform.translation;
 
         // Border collision handling
         let half_ball_size = BALL_SIZE / 2.0;
