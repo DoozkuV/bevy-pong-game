@@ -20,4 +20,4 @@ rand = "0.8.5"
 [dependencies.bevy]
 version = "0.11"
 default-features = true
-features = ["wav"]
+features = ["wav", "dynamic_linking"]
