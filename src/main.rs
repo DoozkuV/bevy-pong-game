@@ -1,6 +1,5 @@
 use bevy::audio::VolumeLevel;
 use bevy::prelude::*;
-use bevy::window::close_on_esc;
 
 // Set up all the modules for the program
 mod menu;
@@ -80,8 +79,6 @@ fn main() {
         .add_state::<AppState>()
         // Do this outside of any state management
         .add_systems(Startup, init_game)
-        // Built in bevy utility func for testing
-        .add_systems(Update, close_on_esc)
         .run();
 }
 

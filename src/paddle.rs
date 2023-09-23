@@ -68,7 +68,7 @@ fn move_paddle(transform: &mut Transform, multiplier: f32, time: &Time) {
     let half_paddle_height = PADDLE_HEIGHT / 2.0;
     let vertical_border = WINDOW_HEIGHT / 2.0;
     let y_min = -vertical_border + half_paddle_height;
-    // Make sure the paddle cannot enter in the UI's domain
+    // Make sure paddle doesn't clash with UI
     let y_max = vertical_border - UI_HEIGHT - half_paddle_height;
 
     let y_pos = &mut transform.translation.y;

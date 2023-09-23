@@ -6,6 +6,7 @@ use crate::paddle::{Paddle, PADDLE_WIDTH};
 use crate::score::{Score, ScoreChanged};
 use crate::{AppState, WINDOW_WIDTH};
 
+// Amount of points needed for one side to win
 const VICTORY_POINT_REQ: u32 = 10;
 
 pub struct GamePlugin;
@@ -13,7 +14,7 @@ pub struct GamePlugin;
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(AppState::Game), setup_game)
-            .add_systems(Update, check_for_win.run_if(in_state(AppState::Game)))
+            .add_systems(Update, check_for_victory.run_if(in_state(AppState::Game)))
             .add_systems(OnExit(AppState::Game), cleanup_game);
     }
 }
@@ -36,7 +37,7 @@ impl GameData {
 }
 
 fn setup_game(mut commands: Commands, asset_server: Res<AssetServer>, menu_data: Res<MenuData>) {
-    // A vector that holds all of the entities that we will be spawning here
+    // Create a vector that stores all the spawned entities for teardown later
     let entities = vec![
         // Spawn the ball
         commands
@@ -88,7 +89,7 @@ fn setup_game(mut commands: Commands, asset_server: Res<AssetServer>, menu_data:
     commands.insert_resource(GameData::new(entities));
 }
 
-fn check_for_win(
+fn check_for_victory(
     mut change_events: EventReader<ScoreChanged>,
     mut next_state: ResMut<NextState<AppState>>,
     mut game_data: ResMut<GameData>,
