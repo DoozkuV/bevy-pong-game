@@ -1,7 +1,7 @@
 use bevy::audio::VolumeLevel;
 use bevy::prelude::*;
 
-// Set up all the modules for the program
+// Import all the modules
 mod menu;
 use menu::MenuPlugin;
 
